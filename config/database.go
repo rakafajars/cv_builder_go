@@ -29,7 +29,7 @@ func ConnectDatabase(cfg *Config) {
 
 	database.AutoMigrate(&models.User{},
 		&models.Profile{},
-		&models.WorkExperiences{},
+		&models.WorkExperience{},
 		&models.Education{},
 		&models.Skills{},
 		&models.Projects{})

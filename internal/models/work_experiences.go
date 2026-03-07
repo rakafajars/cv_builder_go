@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type WorkExperiences struct {
+type WorkExperience struct {
 	gorm.Model
 	UserID      uint       `gorm:"not null" json:"user_id"`
 	CompanyName string     `gorm:"type:varchar(100)" json:"company_name"`
