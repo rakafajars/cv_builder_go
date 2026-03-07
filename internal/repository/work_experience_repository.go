@@ -7,6 +7,10 @@ import (
 )
 
 type WorkExperinceRepository interface {
+	Create(workExperience *models.WorkExperience) error
+	Update(userID, ID uint, workExperience *models.WorkExperience) error
+	Delete(userID, ID uint) error
+	GetAllByUserID(userID uint) ([]models.WorkExperience, error)
 }
 
 type workExperinceRepository struct {
