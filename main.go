@@ -26,6 +26,9 @@ func main() {
 	workExperienceRepo := repository.NewWorkExperienceRepository(config.DB)
 	workExperienceUsecase := usecase.NewWorkExperienceUsecase(workExperienceRepo)
 	workExperienceHandler := delivery.NewWorkExperienceHandler(workExperienceUsecase)
+	skillRepo := repository.NewSkillsRepository(config.DB)
+	skillUsecase := usecase.NewSkillsUsecase(skillRepo)
+	skillHandler := delivery.NewskillHandler(skillUsecase)
 
 	r := chi.NewRouter()
 
@@ -54,6 +57,11 @@ func main() {
 			r.Post("/work-experience", workExperienceHandler.Create)
 			r.Put("/work-experience/{id}", workExperienceHandler.Update)
 			r.Delete("/work-experience/{id}", workExperienceHandler.Delete)
+
+			r.Get("/skill", skillHandler.GetAllByUserID)
+			r.Post("/skill", skillHandler.Create)
+			r.Put("/skill/{id}", skillHandler.Update)
+			r.Delete("/skill/{id}", skillHandler.Delete)
 
 		})
 	})

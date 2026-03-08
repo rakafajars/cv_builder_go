@@ -52,23 +52,23 @@ func (h *SkillHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var input struct{}
+	var input models.SkillRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		pkg.BadRequest(w, "Gagal Parsing Data", err.Error())
 		return
 	}
 
-	err := h.usecase.Create(&models.Skills{
-		UserID: userID,
-	})
+	skill := input.ToModel(userID)
+
+	err := h.usecase.Create(&skill)
 
 	if err != nil {
 		pkg.BadRequest(w, "Gagal Menyimpan Skill", err.Error())
 		return
 	}
 
-	pkg.Created(w, "Berhasil membuat skill", nil)
+	pkg.Created(w, "Berhasil membuat skill", skill)
 
 }
 
@@ -92,21 +92,25 @@ func (h *SkillHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var input struct{}
+	var input models.SkillRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		pkg.BadRequest(w, "Gagal Parsing Data", err.Error())
 		return
 	}
 
-	err = h.usecase.Update(userID, uint(id), &models.Skills{})
+	skill := input.ToModel(userID)
+
+	err = h.usecase.Update(userID, uint(id), &skill)
 
 	if err != nil {
 		pkg.BadRequest(w, "Gagal Menyimpan Skill", err.Error())
 		return
 	}
 
-	pkg.Created(w, "Berhasil membuat skill", nil)
+	response := input.ToResponse(uint(id))
+
+	pkg.Created(w, "Berhasil membuat skill", response)
 
 }
 
