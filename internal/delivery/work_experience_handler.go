@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -53,33 +52,16 @@ func (h *WorkExperienceHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var input struct {
-		CompanyName string     `json:"company_name"`
-		Position    string     `json:"position"`
-		StartDate   time.Time  `json:"start_date"`
-		EndDate     *time.Time `json:"end_date"`
-		IsCurrent   bool       `json:"is_current"`
-		Description string     `json:"description"`
-	}
+	var input models.WorkExperienceRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		pkg.BadRequest(w, "Gagal Parsing Data", err.Error())
 		return
 	}
 
-	workExperience := models.WorkExperience{
-		UserID:      userID,
-		Position:    input.Position,
-		CompanyName: input.CompanyName,
-		StartDate:   input.StartDate,
-		EndDate:     input.EndDate,
-		IsCurrent:   input.IsCurrent,
-		Description: input.Description,
-	}
+	workExperience := input.ToModel(userID)
 
-	err := h.usecase.Create(
-		&workExperience,
-	)
+	err := h.usecase.Create(&workExperience)
 
 	if err != nil {
 		pkg.BadRequest(w, "Gagal Menyimpan Work Experience", err.Error())
@@ -109,41 +91,25 @@ func (h *WorkExperienceHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var input struct {
-		CompanyName string     `json:"company_name"`
-		Position    string     `json:"position"`
-		StartDate   time.Time  `json:"start_date"`
-		EndDate     *time.Time `json:"end_date"`
-		IsCurrent   bool       `json:"is_current"`
-		Description string     `json:"description"`
-	}
+	var input models.WorkExperienceRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		pkg.BadRequest(w, "Gagal Parsing Data", err.Error())
 		return
 	}
 
-	workExperience := models.WorkExperience{
-		UserID:      userID,
-		Position:    input.Position,
-		CompanyName: input.CompanyName,
-		StartDate:   input.StartDate,
-		EndDate:     input.EndDate,
-		IsCurrent:   input.IsCurrent,
-		Description: input.Description,
-	}
+	workExperience := input.ToModel(userID)
 
-	err = h.usecase.Update(
-		userID, uint(id),
-		&workExperience,
-	)
+	err = h.usecase.Update(userID, uint(id), &workExperience)
 
 	if err != nil {
 		pkg.BadRequest(w, "Gagal Ubah Work Experience", err.Error())
 		return
 	}
 
-	pkg.Success(w, "Berhasil mengubah data Work Experience", workExperience)
+	response := input.ToResponse(uint(id))
+
+	pkg.Success(w, "Berhasil mengubah data Work Experience", response)
 }
 
 func (h *WorkExperienceHandler) Delete(w http.ResponseWriter, r *http.Request) {
@@ -172,5 +138,4 @@ func (h *WorkExperienceHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pkg.Success(w, "Berhasil Menghapus Work Experience", nil)
-
 }
