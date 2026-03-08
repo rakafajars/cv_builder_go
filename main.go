@@ -23,6 +23,9 @@ func main() {
 	profileRepo := repository.NewProfileRepository(config.DB)
 	profleUsecase := usecase.NewProfileUsecase(profileRepo)
 	profileHandler := delivery.NewProfileHandler(profleUsecase)
+	workExperienceRepo := repository.NewWorkExperienceRepository(config.DB)
+	workExperienceUsecase := usecase.NewWorkExperienceUsecase(workExperienceRepo)
+	workExperienceHandler := delivery.NewWorkExperienceHandler(workExperienceUsecase)
 
 	r := chi.NewRouter()
 
@@ -46,6 +49,11 @@ func main() {
 
 			r.Get("/profile", profileHandler.GetProfile)
 			r.Post("/profile", profileHandler.UpsertProfile)
+
+			r.Get("/work-experience", workExperienceHandler.GetAllByUserID)
+			r.Post("/work-experience", workExperienceHandler.Create)
+			r.Put("/work-experience/{id}", workExperienceHandler.Update)
+			r.Delete("/work-experience/{id}", workExperienceHandler.Delete)
 
 		})
 	})
