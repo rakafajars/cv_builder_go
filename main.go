@@ -29,6 +29,9 @@ func main() {
 	skillRepo := repository.NewSkillsRepository(config.DB)
 	skillUsecase := usecase.NewSkillsUsecase(skillRepo)
 	skillHandler := delivery.NewskillHandler(skillUsecase)
+	projectRepo := repository.NewProjectRepository(config.DB)
+	projectUsecase := usecase.NewProjectUsecase(projectRepo)
+	projectHandler := delivery.NewProjectHandler(projectUsecase)
 
 	r := chi.NewRouter()
 
@@ -62,6 +65,11 @@ func main() {
 			r.Post("/skill", skillHandler.Create)
 			r.Put("/skill/{id}", skillHandler.Update)
 			r.Delete("/skill/{id}", skillHandler.Delete)
+
+			r.Get("/project", projectHandler.GetAllByUserID)
+			r.Post("/project", projectHandler.Create)
+			r.Put("/project/{id}", projectHandler.Update)
+			r.Delete("/project/{id}", projectHandler.Delete)
 
 		})
 	})
