@@ -42,15 +42,26 @@ cv_builder_be/
 │   ├── repository/          # Layer akses database (GORM queries)
 │   │   ├── user_repository.go
 │   │   ├── profile_repository.go
-│   │   └── cv_repository.go     # (placeholder untuk fitur mendatang)
+│   │   ├── work_experience_repository.go
+│   │   ├── education_repository.go
+│   │   ├── skills_repository.go
+│   │   └── project_repository.go
 │   │
 │   ├── usecase/             # Business logic
-│   │   ├── user_usecase.go      # Register & Login logic
-│   │   └── profile_usecase.go   # Get & Upsert profile logic
+│   │   ├── user_usecase.go
+│   │   ├── profile_usecase.go
+│   │   ├── work_experience_usecase.go
+│   │   ├── education_usecase.go
+│   │   ├── skills_usecase.go
+│   │   └── project_usecase.go
 │   │
 │   └── delivery/            # HTTP handlers (controller)
-│       ├── user_handler.go      # Handler register & login
-│       └── profile_handler.go   # Handler get & upsert profile
+│       ├── user_handler.go
+│       ├── profile_handler.go
+│       ├── work_experience_handler.go
+│       ├── education_handler.go
+│       ├── skill_handler.go
+│       └── project_handler.go
 │
 └── pkg/                     # Utility & helper packages
     ├── jwt.go               # Generate & Validate JWT token
@@ -187,6 +198,22 @@ Header: `Authorization: Bearer <token>`
 |--------|----------|-----------|
 | `GET` | `/profile` | Mendapatkan data profile user |
 | `POST` | `/profile` | Membuat atau mengupdate profile user |
+| `GET` | `/work-experience` | Mendapatkan seluruh data pengalaman kerja user |
+| `POST` | `/work-experience` | Menambahkan data pengalaman kerja |
+| `PUT` | `/work-experience/{id}` | Mengubah data pengalaman kerja |
+| `DELETE` | `/work-experience/{id}` | Menghapus data pengalaman kerja |
+| `GET` | `/education` | Mendapatkan seluruh data pendidikan user |
+| `POST` | `/education` | Menambahkan data pendidikan |
+| `PUT` | `/education/{id}` | Mengubah data pendidikan |
+| `DELETE` | `/education/{id}` | Menghapus data pendidikan |
+| `GET` | `/skill` | Mendapatkan seluruh data keahlian user |
+| `POST` | `/skill` | Menambahkan data keahlian |
+| `PUT` | `/skill/{id}` | Mengubah data keahlian |
+| `DELETE` | `/skill/{id}` | Menghapus data keahlian |
+| `GET` | `/project` | Mendapatkan seluruh data proyek user |
+| `POST` | `/project` | Menambahkan data proyek |
+| `PUT` | `/project/{id}` | Mengubah data proyek |
+| `DELETE` | `/project/{id}` | Menghapus data proyek |
 
 ---
 

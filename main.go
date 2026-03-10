@@ -35,6 +35,9 @@ func main() {
 	educationRepo := repository.NewEducationRepository(config.DB)
 	educationUsecase := usecase.NewEducationUsecase(educationRepo)
 	educationHandler := delivery.NewEducationHandler(educationUsecase)
+	cvRepo := repository.NewCVRepository(config.DB)
+	cvUsecase := usecase.NewCVUsecase(cvRepo)
+	cvHandler := delivery.NewCVHandler(cvUsecase)
 
 	r := chi.NewRouter()
 
@@ -78,6 +81,8 @@ func main() {
 			r.Post("/education", educationHandler.Create)
 			r.Put("/education/{id}", educationHandler.Update)
 			r.Delete("/education/{id}", educationHandler.Delete)
+
+			r.Get("/generate-cv", cvHandler.GenerateCV)
 
 		})
 	})
