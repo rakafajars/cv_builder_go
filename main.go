@@ -47,17 +47,14 @@ func main() {
 	// 5. Mendaftarkan Rute (Endpoints)
 	r.Route("/api/v1", func(r chi.Router) {
 
-		// --- AREA PUBLIK (Tidak butuh token) ---
 		r.Group(func(r chi.Router) {
 			r.Post("/register", userHandler.Register)
 			r.Post("/login", userHandler.Login)
 		})
 
-		// --- AREA TERLARANG (Wajib bawa token JWT) ---
 		r.Group(func(r chi.Router) {
-			// Pasang "Satpam" buatan kita khusus untuk grup rute ini
+
 			r.Use(customMw.AuthMiddleware(cfg.JWTSecret))
-			// Endpoint sementara untuk mengetes apakah token dan middleware berfungsi
 
 			r.Get("/profile", profileHandler.GetProfile)
 			r.Post("/profile", profileHandler.UpsertProfile)

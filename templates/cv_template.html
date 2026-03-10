@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{if .Profile}}{{.Profile.FullName}}{{else}}CV{{end}}</title>
+    <style>
+        /* CSS Clean, Minimalist, ATS-Friendly */
+        body {
+            font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+            color: #333333;
+            background-color: #ffffff;
+            line-height: 1.5;
+            margin: 0 auto;
+            max-width: 800px;
+            padding: 40px;
+        }
+
+        h1, h2, h3, h4 {
+            color: #111111;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        h1 {
+            font-size: 28px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-size: 18px;
+            text-transform: uppercase;
+            margin-top: 25px;
+            letter-spacing: 1px;
+        }
+
+        h3 {
+            font-size: 16px;
+            margin-top: 15px;
+        }
+
+        p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        ul {
+            margin: 5px 0 15px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        hr {
+            border: 0;
+            border-top: 2px solid #333333;
+            margin: 10px 0 15px 0;
+        }
+
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .contact-info { font-size: 14px; margin-bottom: 20px; }
+        .contact-info span { margin: 0 10px; }
+        .date-location { font-style: italic; color: #555555; font-size: 14px; }
+        .section-item { margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+    {{if .Profile}}
+    <!-- ================= PROFILE / HEADER SECTION ================= -->
+    <header>
+        <h1>{{.Profile.FullName}}</h1>
+        <p class="text-center contact-info">
+            {{if .Profile.Phone}}<span>{{.Profile.Phone}}</span>{{end}}
+            {{if and .Profile.Phone .Profile.Address}} | {{end}}
+            {{if .Profile.Address}}<span>{{.Profile.Address}}</span>{{end}}
+        </p>
+
+        {{if .Profile.Summary}}
+        <h2>Summary</h2>
+        <hr>
+        <p>{{.Profile.Summary}}</p>
+        {{end}}
+    </header>
+    {{end}}
+
+    <!-- ================= WORK EXPERIENCES SECTION ================= -->
+    {{if .WorkExperiences}}
+    <section>
+        <h2>Experience</h2>
+        <hr>
+        {{range .WorkExperiences}}
+        <div class="section-item">
+            <h3>{{.Position}} - {{.CompanyName}}</h3>
+            <p class="date-location">
+                {{.StartDate.Format "Jan 2006"}} - 
+                {{if .IsCurrent}}
+                    Present
+                {{else}}
+                    {{if .EndDate}}{{.EndDate.Format "Jan 2006"}}{{end}}
+                {{end}}
+            </p>
+            {{if .Description}}
+            <p>{{.Description}}</p>
+            {{end}}
+        </div>
+        {{end}}
+    </section>
+    {{end}}
+
+    <!-- ================= EDUCATIONS SECTION ================= -->
+    {{if .Educations}}
+    <section>
+        <h2>Education</h2>
+        <hr>
+        {{range .Educations}}
+        <div class="section-item">
+            <h3>{{.Institution}}</h3>
+            <p><strong>{{.Degree}}{{if .FieldOfStudy}}, {{.FieldOfStudy}}{{end}}</strong></p>
+            <p class="date-location">
+                {{.StartDate.Format "Jan 2006"}} - 
+                {{if .IsCurrent}}
+                    Present
+                {{else}}
+                    {{if .EndDate}}{{.EndDate.Format "Jan 2006"}}{{end}}
+                {{end}}
+            </p>
+            {{if .GPA}}
+            <p>GPA: {{.GPA}}</p>
+            {{end}}
+        </div>
+        {{end}}
+    </section>
+    {{end}}
+
+    <!-- ================= PROJECTS SECTION ================= -->
+    {{if .Projects}}
+    <section>
+        <h2>Projects</h2>
+        <hr>
+        {{range .Projects}}
+        <div class="section-item">
+            <h3>{{.Title}}{{if .Link}} ({{.Link}}){{end}}</h3>
+            {{if .TechStack}}
+            <p><strong>Tech Stack:</strong> {{.TechStack}}</p>
+            {{end}}
+            <p>{{.Description}}</p>
+        </div>
+        {{end}}
+    </section>
+    {{end}}
+
+    <!-- ================= SKILLS SECTION ================= -->
+    {{if .Skills}}
+    <section>
+        <h2>Skills</h2>
+        <hr>
+        <ul>
+            {{range .Skills}}
+            <li><strong>{{.Name}}</strong>{{if .Level}} - {{.Level}}{{end}}</li>
+            {{end}}
+        </ul>
+    </section>
+    {{end}}
+
+</body>
+</html>
