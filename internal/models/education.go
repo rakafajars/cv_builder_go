@@ -15,4 +15,5 @@ type Education struct {
 	StartDate    time.Time  `gorm:"type:date" json:"start_date"`
 	EndDate      *time.Time `gorm:"type:date" json:"end_date"`
 	GPA          float64    `json:"gpa"`
+	IsCurrent    bool       `gorm:"default:false" json:"is_current"`
 }

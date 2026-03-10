@@ -32,6 +32,9 @@ func main() {
 	projectRepo := repository.NewProjectRepository(config.DB)
 	projectUsecase := usecase.NewProjectUsecase(projectRepo)
 	projectHandler := delivery.NewProjectHandler(projectUsecase)
+	educationRepo := repository.NewEducationRepository(config.DB)
+	educationUsecase := usecase.NewEducationUsecase(educationRepo)
+	educationHandler := delivery.NewEducationHandler(educationUsecase)
 
 	r := chi.NewRouter()
 
@@ -70,6 +73,11 @@ func main() {
 			r.Post("/project", projectHandler.Create)
 			r.Put("/project/{id}", projectHandler.Update)
 			r.Delete("/project/{id}", projectHandler.Delete)
+
+			r.Get("/education", educationHandler.GetAllByUserID)
+			r.Post("/education", educationHandler.Create)
+			r.Put("/education/{id}", educationHandler.Update)
+			r.Delete("/education/{id}", educationHandler.Delete)
 
 		})
 	})
