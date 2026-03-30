@@ -30,14 +30,15 @@ func (h *WorkExperienceHandler) GetAllByUserID(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	workExperience, err := h.usecase.GetAllByUserID(userID)
+	pagination := pkg.GetPaginationParams(r)
+	workExperience, meta, err := h.usecase.GetAllByUserID(userID, pagination)
 
 	if err != nil {
 		pkg.InternalServerError(w, "Internal Server Error", err.Error())
 		return
 	}
 
-	pkg.Success(w, "Berhasil Mendapatkan Work Experience", workExperience)
+	pkg.SuccessPagination(w, "Berhasil Mendapatkan Work Experience", workExperience, meta)
 }
 
 func (h *WorkExperienceHandler) Create(w http.ResponseWriter, r *http.Request) {

@@ -3,11 +3,12 @@ package usecase
 import (
 	"cv-builder-api/internal/models"
 	"cv-builder-api/internal/repository"
+	"cv-builder-api/pkg"
 	"errors"
 )
 
 type WorkExperienceUsecase interface {
-	GetAllByUserID(userID uint) ([]models.WorkExperience, error)
+	GetAllByUserID(userID uint, pagination pkg.PaginationQuery) ([]models.WorkExperience, pkg.PaginationMeta, error)
 	Delete(userID, id uint) error
 	Create(workExperience *models.WorkExperience) error
 	Update(userID, ID uint, workExperience *models.WorkExperience) error
@@ -23,8 +24,22 @@ func NewWorkExperienceUsecase(r repository.WorkExperinceRepository) WorkExperien
 	}
 }
 
-func (u *workExperienceUsecase) GetAllByUserID(userID uint) ([]models.WorkExperience, error) {
-	return u.repo.GetAllByUserID(userID)
+func (u *workExperienceUsecase) GetAllByUserID(userID uint, pagination pkg.PaginationQuery) ([]models.WorkExperience, pkg.PaginationMeta, error) {
+	workExperience, total, err := u.repo.GetAllByUserID(userID, pagination)
+	if err != nil {
+		return nil, pkg.PaginationMeta{}, err
+	}
+
+	meta := pkg.PaginationMeta{
+		Page:      pagination.Page,
+		Limit:     pagination.Limit,
+		Total:     total,
+		TotalPage: pkg.CalculateTotalPages(total, pagination.Limit),
+		Filter:    pagination.Search,
+		Sort:      pagination.Sort,
+	}
+
+	return workExperience, meta, nil
 }
 
 func (u *workExperienceUsecase) Create(experience *models.WorkExperience) error {

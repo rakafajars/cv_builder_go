@@ -2,6 +2,7 @@ package repository
 
 import (
 	"cv-builder-api/internal/models"
+	"cv-builder-api/pkg"
 	"errors"
 
 	"gorm.io/gorm"
@@ -11,7 +12,7 @@ type WorkExperinceRepository interface {
 	Create(workExperience *models.WorkExperience) error
 	Update(userID, ID uint, workExperience *models.WorkExperience) error
 	Delete(userID, ID uint) error
-	GetAllByUserID(userID uint) ([]models.WorkExperience, error)
+	GetAllByUserID(userID uint, pagination pkg.PaginationQuery) ([]models.WorkExperience, int, error)
 }
 
 type workExperinceRepository struct {
@@ -54,11 +55,24 @@ func (r *workExperinceRepository) Delete(userID, ID uint) error {
 	return nil
 }
 
-func (r *workExperinceRepository) GetAllByUserID(userID uint) ([]models.WorkExperience, error) {
+func (r *workExperinceRepository) GetAllByUserID(userID uint, pagination pkg.PaginationQuery) ([]models.WorkExperience, int, error) {
 	var workExperience []models.WorkExperience
+	var total int64
 
-	err := r.db.Where("user_id = ?", userID).Find(&workExperience).Error
+	query := r.db.Where("user_id = ?", userID)
 
-	return workExperience, err
+	if pagination.Search != "" {
+		searchTerm := "%" + pagination.Search + "%"
+		query = query.Where("company_name LIKE ? OR position LIKE ?", searchTerm, searchTerm)
+	}
 
+	err := query.Model(&models.WorkExperience{}).Count(&total).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	offset := (pagination.Page - 1) * pagination.Limit
+	err = query.Limit(pagination.Limit).Offset(offset).Order("start_date DESC").Find(&workExperience).Error
+
+	return workExperience, int(total), err
 }
