@@ -30,14 +30,16 @@ func (h *SkillHandler) GetAllByUserID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	skill, err := h.usecase.GetAllByUserID(userID)
+	pagination := pkg.GetPaginationParams(r)
+
+	skill, meta, err := h.usecase.GetAllByUserID(userID, pagination)
 
 	if err != nil {
 		pkg.InternalServerError(w, "Internal Server Error", err.Error())
 		return
 	}
 
-	pkg.Success(w, "Berhasil Mendapatkan Skill", skill)
+	pkg.SuccessPagination(w, "Berhasil Mendapatkan Skill", skill, meta)
 
 }
 
@@ -139,4 +141,32 @@ func (h *SkillHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pkg.Success(w, "Berhasil Menghapus Skill", nil)
+}
+
+func (h *SkillHandler) GetSkillByID(w http.ResponseWriter, r *http.Request) {
+	ctxValue := r.Context().Value(middleware.UserIDKey)
+
+	paramsID := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(paramsID, 10, 32)
+
+	if err != nil {
+		pkg.BadRequest(w, "Gagal Mendapatkan ID Skill", err.Error())
+		return
+	}
+
+	userID, ok := ctxValue.(uint)
+
+	if !ok {
+		pkg.BadRequest(w, "Akses di tolak", "Gagal membaca User ID dari token")
+		return
+	}
+
+	skill, err := h.usecase.GetSkillByID(uint(id), userID)
+
+	if err != nil {
+		pkg.NotFound(w, "Skill tidak di temukan", err.Error())
+		return
+	}
+
+	pkg.Success(w, "Berhasil Mendapatkan Detail Skill", skill)
 }

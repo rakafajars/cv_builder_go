@@ -9,7 +9,7 @@ import (
 )
 
 type UserUsecase interface {
-	Login(email, password string) (string, error)
+	Login(email, password string) (*models.User, string, error)
 	Register(email, password string) (*models.User, error)
 }
 
@@ -54,19 +54,19 @@ func (u *userUsecase) Register(email, password string) (*models.User, error) {
 	return user, nil
 }
 
-func (u *userUsecase) Login(email, password string) (string, error) {
+func (u *userUsecase) Login(email, password string) (*models.User, string, error) {
 	// mencari user di database
 	user, err := u.repo.FindByEmail(email)
 
 	if err != nil {
-		return "", errors.New("Email atau Password Salah!")
+		return nil, "", errors.New("Email atau Password Salah!")
 	}
 
 	if !pkg.CheckPasswordHash(password, user.Password) {
-		return "", errors.New("Email atau Password Salah!")
+		return nil, "", errors.New("Email atau Password Salah!")
 	}
 
 	tokenString, err := pkg.GenerateToken(user.ID, u.secretKey)
 
-	return tokenString, err
+	return user, tokenString, err
 }

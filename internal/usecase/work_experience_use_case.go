@@ -12,6 +12,7 @@ type WorkExperienceUsecase interface {
 	Delete(userID, id uint) error
 	Create(workExperience *models.WorkExperience) error
 	Update(userID, ID uint, workExperience *models.WorkExperience) error
+	GetWorkExperienceByID(ID, userID uint) (*models.WorkExperience, error)
 }
 
 type workExperienceUsecase struct {
@@ -82,4 +83,14 @@ func (u *workExperienceUsecase) Update(userID, ID uint, experience *models.WorkE
 
 func (u *workExperienceUsecase) Delete(userID, id uint) error {
 	return u.repo.Delete(userID, id)
+}
+
+func (u *workExperienceUsecase) GetWorkExperienceByID(ID, userID uint) (*models.WorkExperience, error) {
+	workExperience, err := u.repo.GetWorkExperienceByID(ID, userID)
+
+	if err != nil {
+		return nil, errors.New("Data pengalaman kerja tidak ditemukan")
+	}
+
+	return workExperience, nil
 }

@@ -30,14 +30,16 @@ func (h *ProjectHandler) GetAllByUserID(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	workExperience, err := h.usecase.GetAllByUserID(userID)
+	pagination := pkg.GetPaginationParams(r)
+
+	workExperience, meta, err := h.usecase.GetAllByUserID(userID, pagination)
 
 	if err != nil {
 		pkg.InternalServerError(w, "Internal Server Error", err.Error())
 		return
 	}
 
-	pkg.Success(w, "Berhasil Mendapatkan Project", workExperience)
+	pkg.SuccessPagination(w, "Berhasil Mendapatkan Project", workExperience, meta)
 }
 
 func (h *ProjectHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -138,4 +140,33 @@ func (h *ProjectHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pkg.Success(w, "Berhasil Menghapus Project", nil)
+}
+
+func (h *ProjectHandler) GetProjectByID(w http.ResponseWriter, r *http.Request) {
+	ctxValue := r.Context().Value(middleware.UserIDKey)
+
+	paramsID := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(paramsID, 10, 32)
+
+	if err != nil {
+		pkg.BadRequest(w, "Gagal Mendapatkan ID Project", err.Error())
+		return
+	}
+
+	userID, ok := ctxValue.(uint)
+
+	if !ok {
+		pkg.BadRequest(w, "Akses di tolak", "Gagal membaca User ID dari token")
+		return
+	}
+
+	project, err := h.usecase.GetProjectByID(uint(id), userID)
+
+	if err != nil {
+		pkg.NotFound(w, "Project tidak di temukan", err.Error())
+		return
+	}
+
+	pkg.Success(w, "Berhasil Mendapatkan Detail Project", project)
+
 }

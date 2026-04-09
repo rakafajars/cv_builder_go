@@ -13,6 +13,7 @@ type WorkExperinceRepository interface {
 	Update(userID, ID uint, workExperience *models.WorkExperience) error
 	Delete(userID, ID uint) error
 	GetAllByUserID(userID uint, pagination pkg.PaginationQuery) ([]models.WorkExperience, int, error)
+	GetWorkExperienceByID(ID, userID uint) (*models.WorkExperience, error)
 }
 
 type workExperinceRepository struct {
@@ -63,7 +64,7 @@ func (r *workExperinceRepository) GetAllByUserID(userID uint, pagination pkg.Pag
 
 	if pagination.Search != "" {
 		searchTerm := "%" + pagination.Search + "%"
-		query = query.Where("company_name LIKE ? OR position LIKE ?", searchTerm, searchTerm)
+		query = query.Where("company_name ILIKE ? OR position ILIKE ?", searchTerm, searchTerm)
 	}
 
 	err := query.Model(&models.WorkExperience{}).Count(&total).Error
@@ -72,7 +73,18 @@ func (r *workExperinceRepository) GetAllByUserID(userID uint, pagination pkg.Pag
 	}
 
 	offset := (pagination.Page - 1) * pagination.Limit
-	err = query.Limit(pagination.Limit).Offset(offset).Order("start_date DESC").Find(&workExperience).Error
+	sortOrder := "start_date DESC"
+	if pagination.Sort != "" {
+		sortOrder = pagination.Sort
+	}
+	err = query.Limit(pagination.Limit).Offset(offset).Order(sortOrder).Find(&workExperience).Error
 
 	return workExperience, int(total), err
+}
+
+func (r *workExperinceRepository) GetWorkExperienceByID(ID, userID uint) (*models.WorkExperience, error) {
+	var workExperience models.WorkExperience
+	err := r.db.Where("id = ? AND user_id = ?", ID, userID).First(&workExperience).Error
+
+	return &workExperience, err
 }

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"cv-builder-api/internal/models"
+	"cv-builder-api/pkg"
 	"errors"
 
 	"gorm.io/gorm"
@@ -11,7 +12,8 @@ type ProjectRepository interface {
 	Create(project *models.Projects) error
 	Update(userID, ID uint, project *models.Projects) error
 	Delete(userID, ID uint) error
-	GetAllByUserID(userID uint) ([]models.Projects, error)
+	GetAllByUserID(userID uint, pagination pkg.PaginationQuery) ([]models.Projects, int, error)
+	GetProjectByID(ID, userID uint) (*models.Projects, error)
 }
 
 type projectRepository struct {
@@ -54,10 +56,38 @@ func (r *projectRepository) Delete(userID, ID uint) error {
 	return nil
 }
 
-func (r *projectRepository) GetAllByUserID(userID uint) ([]models.Projects, error) {
+func (r *projectRepository) GetAllByUserID(userID uint, pagination pkg.PaginationQuery) ([]models.Projects, int, error) {
 	var projects []models.Projects
+	var total int64
 
-	err := r.db.Where("user_id = ?", userID).Find(&projects).Error
+	query := r.db.Where("user_id = ?", userID)
 
-	return projects, err
+	if pagination.Search != "" {
+		searchTerm := "%" + pagination.Search + "%"
+		query = query.Where("title ILIKE ? OR tech_stack ILIKE ? OR description ILIKE ?", searchTerm, searchTerm, searchTerm)
+	}
+
+	err := query.Model(&models.Projects{}).Count(&total).Error
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	offset := (pagination.Page - 1) * pagination.Limit
+	sortOrder := "created_at DESC"
+	if pagination.Sort != "" {
+		sortOrder = pagination.Sort
+	}
+
+	err = query.Limit(pagination.Limit).Offset(offset).Order(sortOrder).Find(&projects).Error
+
+	return projects, int(total), err
+}
+
+func (r *projectRepository) GetProjectByID(ID, userID uint) (*models.Projects, error) {
+	var project models.Projects
+	err := r.db.Where("id = ? AND user_id = ?", ID, userID).First(&project).Error
+
+	return &project, err
+
 }

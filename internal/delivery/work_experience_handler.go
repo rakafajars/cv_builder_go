@@ -140,3 +140,31 @@ func (h *WorkExperienceHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	pkg.Success(w, "Berhasil Menghapus Work Experience", nil)
 }
+
+func (h *WorkExperienceHandler) GetWorkExperienceByID(w http.ResponseWriter, r *http.Request) {
+	ctxValue := r.Context().Value(middleware.UserIDKey)
+
+	paramsID := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(paramsID, 10, 32)
+
+	if err != nil {
+		pkg.BadRequest(w, "Gagal Mendapatkan ID Work Experience", err.Error())
+		return
+	}
+
+	userID, ok := ctxValue.(uint)
+
+	if !ok {
+		pkg.BadRequest(w, "Akses di tolak", "Gagal membaca User ID dari token")
+		return
+	}
+
+	workExperience, err := h.usecase.GetWorkExperienceByID(uint(id), userID)
+
+	if err != nil {
+		pkg.NotFound(w, "Work Experience tidak di temukan", err.Error())
+		return
+	}
+
+	pkg.Success(w, "Berhasil Mendapatkan Detail Work Experience", workExperience)
+}

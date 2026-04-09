@@ -62,7 +62,7 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := h.usecase.Login(input.Email, input.Password)
+	user, token, err := h.usecase.Login(input.Email, input.Password)
 	if err != nil {
 		pkg.Unauthorized(w, "Login Gagal", err.Error())
 		return
@@ -70,5 +70,6 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	pkg.Success(w, "Login Berhasil", map[string]any{
 		"token": token,
+		"user":  user,
 	})
 }

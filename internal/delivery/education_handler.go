@@ -29,14 +29,16 @@ func (h *EducationHandler) GetAllByUserID(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	education, err := h.usecase.GetAllByUserID(userID)
+	pagination := pkg.GetPaginationParams(r)
+
+	education, meta, err := h.usecase.GetAllByUserID(userID, pagination)
 
 	if err != nil {
 		pkg.InternalServerError(w, "Internal Server Error", err.Error())
 		return
 	}
 
-	pkg.Success(w, "Berhasil Mendapatkan Education", education)
+	pkg.SuccessPagination(w, "Berhasil Mendapatkan Education", education, meta)
 }
 
 func (h *EducationHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -136,4 +138,32 @@ func (h *EducationHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pkg.Success(w, "Berhasil Menghapus Education", nil)
+}
+
+func (h *EducationHandler) GetEducationByID(w http.ResponseWriter, r *http.Request) {
+	ctxValue := r.Context().Value(middleware.UserIDKey)
+
+	paramsID := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(paramsID, 10, 32)
+
+	if err != nil {
+		pkg.BadRequest(w, "Gagal Mendapatkan ID Education", err.Error())
+		return
+	}
+
+	userID, ok := ctxValue.(uint)
+
+	if !ok {
+		pkg.BadRequest(w, "Akses di tolak", "Gagal membaca User ID dari token")
+		return
+	}
+
+	education, err := h.usecase.GetEducationByID(uint(id), userID)
+
+	if err != nil {
+		pkg.NotFound(w, "Education tidak di temukan", err.Error())
+		return
+	}
+
+	pkg.Success(w, "Berhasil Mendapatkan Detail Education", education)
 }

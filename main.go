@@ -71,21 +71,25 @@ func main() {
 			r.Post("/profile", profileHandler.UpsertProfile)
 
 			r.Get("/work-experience", workExperienceHandler.GetAllByUserID)
+			r.Get("/work-experience/{id}", workExperienceHandler.GetWorkExperienceByID)
 			r.Post("/work-experience", workExperienceHandler.Create)
 			r.Put("/work-experience/{id}", workExperienceHandler.Update)
 			r.Delete("/work-experience/{id}", workExperienceHandler.Delete)
 
 			r.Get("/skill", skillHandler.GetAllByUserID)
+			r.Get("/skill/{id}", skillHandler.GetSkillByID)
 			r.Post("/skill", skillHandler.Create)
 			r.Put("/skill/{id}", skillHandler.Update)
 			r.Delete("/skill/{id}", skillHandler.Delete)
 
 			r.Get("/project", projectHandler.GetAllByUserID)
+			r.Get("/project/{id}", projectHandler.GetProjectByID)
 			r.Post("/project", projectHandler.Create)
 			r.Put("/project/{id}", projectHandler.Update)
 			r.Delete("/project/{id}", projectHandler.Delete)
 
 			r.Get("/education", educationHandler.GetAllByUserID)
+			r.Get("/education/{id}", educationHandler.GetEducationByID)
 			r.Post("/education", educationHandler.Create)
 			r.Put("/education/{id}", educationHandler.Update)
 			r.Delete("/education/{id}", educationHandler.Delete)
