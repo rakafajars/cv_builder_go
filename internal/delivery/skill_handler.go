@@ -112,7 +112,7 @@ func (h *SkillHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	response := input.ToResponse(uint(id))
 
-	pkg.Created(w, "Berhasil membuat skill", response)
+	pkg.Created(w, "Berhasil mengubah skill", response)
 
 }
 

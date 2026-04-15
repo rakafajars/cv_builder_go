@@ -23,6 +23,7 @@ func (r *EducationRequest) ToModel(userID uint) Education {
 		IsCurrent:    r.IsCurrent,
 		GPA:          r.Gpa,
 		Institution:  r.Institution,
+		Description:  r.Description,
 	}
 }
 
